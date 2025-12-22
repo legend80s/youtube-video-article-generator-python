@@ -1,0 +1,130 @@
+做一个网页应用：输入 YouTube video link 或 YouTube video transcript 然后点击“✨ AI 生成文章”流式生成关于该视频的文章。用户可点击复制 markdown。分成两个页面，第一个页面主页，第二个页面是文章页面，点击生成后跳转到文章页面，进行流式输出。
+
+具体是：
+1. 网页初始化有一个大的输入框，提示输入 Paste the YouTube video link, for example: https://www.youtube.com/watch?v=example 或直接输入 YouTube video transcript。底部有一个大按钮“✨ AI 生成文章”。
+2  点击生成按钮：如果输入的是 URL 点击则加一个 credit 提示，将调用第三方服务（https://youtubetotranscript.com/transcript | https://notegpt.io）获取 Transcript。否则直接调用自己的后端接口服务，将 Transcript 转成 markdown 格式的文章。
+3 页面下方**流式**显示生成的文章，用户可以点击复制 markdown。
+
+
+前端 UI 风格模仿 https://restring.dev/
+
+前端技术栈 svelte-kit 也模仿 https://restring.dev/  代码见 https://github.com/likang/restring/blob/main/package.json
+服务端技术栈 python langchain langserve
+
+技术原理：1 若输入  YouTube video link 调用 三方服务  https://youtubetotranscript.com/transcript  获取transcript 获取失败则调用 https://notegpt.io  获取，如果都获取失败则提醒请自行获取 transcript。2 对获取到的 transcript 调用 AI 生成文章服务，流式生成 markdown 格式的文章。
+
+### 流程图
+
+技术原理流程图：
+
+```mermaid
+graph TD
+    Start([开始]) --> InputType{输入类型?}
+
+    InputType -->|Video Link| FetchTrans1[调用 youtubetotranscript.com]
+    InputType -->|Transcript| ProcessDirect[直接处理Transcript]
+
+    FetchTrans1 --> Success1{获取成功?}
+    Success1 -->|是| ProcessDirect
+    Success1 -->|否| FetchTrans2[调用 notegpt.io]
+
+    FetchTrans2 --> Success2{获取成功?}
+    Success2 -->|是| ProcessDirect
+    Success2 -->|否| Error[提醒用户自行获取Transcript]
+
+    ProcessDirect --> LLMProcessing[AI 大模型流式处理]
+    LLMProcessing --> GenerateMarkdown[流式生成Markdown文章]
+    GenerateMarkdown --> Output([输出文章])
+
+    Error --> End([结束])
+
+    style Start fill:#e1f5e1
+    style Output fill:#e1f5e1
+    style Error fill:#ffcccc
+```
+
+## 流程说明：
+
+### 1. 输入判断阶段
+- 用户可以选择输入 **YouTube视频链接** 或 **直接输入Transcript文本**
+- 流程图中的菱形决策框判断输入类型
+
+### 2. Transcript获取阶段（仅视频链接需要）
+- **第一优先级**：调用 `youtubetotranscript.com` API
+- **第二优先级**：如果第一个服务失败，回退到 `notegpt.io`
+- **失败处理**：如果两个服务都失败，提示用户手动获取Transcript
+
+### 3. 核心处理阶段
+- Transcript准备就绪后，调用AI大模型
+- **流式处理**：以流式方式生成内容，提高响应速度
+- **格式输出**：生成Markdown格式的文章
+
+### 4. 输出阶段
+- 最终输出格式良好的Markdown文章
+- 错误情况下给用户明确的提示
+
+这个流程图清晰地展示了系统的容错机制（两个备用服务）和核心功能（流式生成Markdown文章）。
+
+### 开发者
+
+#### 前端技术栈
+
+Tanstack start (React, Vite， TailwindCSS, TypeScript)。
+
+
+#### 服务端技术栈
+
+python langchain langserve
+
+
+服务端关键代码：
+
+
+
+```python
+# Create a LANGSMITH_API_KEY in Settings > API Keys
+from langsmith import Client
+from langchain_openai import ChatOpenAI
+
+
+client = Client()
+# muhsinbashir/youtube-transcript-to-article：Convert any Youtube Video Transcript into an Article ( SEO friendly )
+prompt = client.pull_prompt("muhsinbashir/youtube-transcript-to-article", include_model=True)
+
+model = ChatOpenAI(model="gpt-4o-mini")
+chain = prompt | model
+```
+
+## 前端关键代码
+
+# README
+
+> 一个使用 AI 将 YouTube 视频转录成文章的 Web 应用程序。
+
+## 简介
+
+本设计旨在创建一个 Web 应用程序，该程序能够将 YouTube 视频的转录内容转换为文章。该应用程序将利用 AI 技术来生成高质量的、SEO 友好的文章，以吸引更多的观众。
+
+## Features
+
+- 只需输入 YouTube 视频链接即可生成一篇专业详实的文章。
+- 使用 AI 技术将转录内容转换为 markdown 文章。
+- 支持文章预览和下载。
+
+## 技术栈
+
+- 前端：SvelteKit
+- 后端：Python
+- AI：LangChain 和 OpenAI
+
+
+## 更多功能
+
+文章详情页面：可以
+
+每次生成都会生成一个唯一的 ID，ID 使用 YouTube link 的 id 如  https://www.youtube.com/watch?v=example 则 id 为 example，用于在数据库中存储和检索文章。数据库用 sqlite。
+
+支持自定义 prompt，模式：全量覆盖：覆盖系统默认 prompt，完全使用自定义 prompt；2.增量覆盖：在系统默认 prompt 的基础上，增加自定义 prompt，支持放到系统提示词的前 or 后面；
+
+文章详情页面，默认阅读纯享模式
+文章详情页面，如果数据库有记录，直接展示，如果没有则提示 404 文章暂未生成，请前往首页生成文章。
