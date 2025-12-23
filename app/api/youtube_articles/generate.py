@@ -1,6 +1,7 @@
 from langsmith import Client
 from pydantic import BaseModel
 from langchain_core.runnables import Runnable
+from langchain_core.output_parsers import StrOutputParser
 from app.lib.models import chatModel
 
 client = Client()
@@ -10,7 +11,7 @@ prompt = client.pull_prompt(
     "muhsinbashir/youtube-transcript-to-article", include_model=True
 )
 
-chain: Runnable = prompt | chatModel
+chain: Runnable = prompt | chatModel | StrOutputParser()
 
 
 class ItemWithTranscript(BaseModel):
@@ -25,13 +26,12 @@ class Item(BaseModel):
     mode: str | None = None
 
 
-async def generate(item: Item | ItemWithTranscript) -> dict:
-    print(f"Received item: {item}")
+async def generate(item: Item | ItemWithTranscript) -> str:
+    print(f"Received 1 item: {item}")
     if isinstance(item, ItemWithTranscript):
-        return {"message": "Hello world 1!", "item": item}
-        # return chain.invoke(input=item.transcript)
+        return chain.invoke(input=item.transcript)
 
-    return {"message": "Hello world 2!", "item": item}
+    return "Hello world 2!"
 
 
 __all__ = ["generate"]
