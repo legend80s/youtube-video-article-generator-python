@@ -4,7 +4,12 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from langserve import add_routes
 
-from .api.youtube_articles.generate import Item, ItemWithTranscript, generate
+from .api.youtube_articles.generate import (
+    Item,
+    ItemWithTranscript,
+    generate,
+    generate_stream,
+)
 from .lib.models import chatModel
 
 # from langchain import promt
@@ -33,9 +38,11 @@ async def generate_route(item: Union[Item, ItemWithTranscript]) -> dict:
     return {"article": await generate(item)}
 
 
-# @app.post("/api/youtube-articles/generate_stream")
-# async def generate_route(item: Union[Item, ItemWithTranscript]) -> dict:
-#     return {"article": await generate(item)}
+@app.post("/api/youtube-articles/generate_stream")
+async def generate_stream_route(item: Union[Item, ItemWithTranscript]):
+    # return generate_stream(item)
+    # yield sse response
+    return generate_stream(item)
 
 
 # Edit this to add the chain you want to add
