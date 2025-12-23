@@ -7,8 +7,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "uvicorn>=0.23.2",
-    "langserve[server]>=0.0.30",
-    "pydantic<2",
+    "langchain-openai>=0.1.14",
+    "python-dotenv>=1.2.1",
+    "pydantic>=2.12.5",
+    "langserve[server]>=0.3.3",
 ]
 
 [project.optional-dependencies]
@@ -36,3 +38,12 @@ build-backend = "hatchling.build"
 # packages = ["src/foo"]
 [tool.hatch.build.targets.wheel]
 packages = ["my-app"]  
+
+[dependency-groups]
+dev = [
+    "langchain-cli>=0.0.37",
+]
+
+[[tool.uv.index]]
+name = "tencent"
+url = "https://mirrors.cloud.tencent.com/pypi/simple/"
