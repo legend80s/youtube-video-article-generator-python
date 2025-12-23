@@ -1,13 +1,15 @@
-from langsmith import Client
-from pydantic import BaseModel
-from langchain_core.runnables import Runnable
+from typing import AsyncIterator
+
+from langchain_core.messages import SystemMessage, AIMessageChunk
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import (
-    PromptTemplate,
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
+    PromptTemplate,
 )
-from langchain_core.messages import SystemMessage
+from langchain_core.runnables import Runnable
+from langsmith import Client
+from pydantic import BaseModel
 
 from app.lib.models import chatModel
 
@@ -38,7 +40,7 @@ original_prompt: PromptTemplate = client.pull_prompt(
 
 # 添加自定义系统提示词
 custom_system_prompt = """
-请根据提供的 YouTube 视频转录文本，创作一篇 50 字左右的 Markdown 格式文章。需要：
+请根据提供的 YouTube 视频转录文本，创作一篇 Markdown 格式文章。需要：
 1. 中文撰写
 2. 使用恰当的 markdown 格式标题层级(#、## 等，# 不应该跟标题。错误示例：“# 标题：Exclusive Or Operation的重要特性”，正确例子：“# Exclusive Or Operation的重要特性”)
 """
@@ -73,7 +75,7 @@ async def generate(item: Item | ItemWithTranscript) -> str:
     return "not implemented 1"
 
 
-def generate_stream(item: Item | ItemWithTranscript):
+def generate_stream(item: Item | ItemWithTranscript) -> AsyncIterator[AIMessageChunk]:
     print(f"Received 2 item: {item}")
 
     # print prompt
@@ -82,7 +84,7 @@ def generate_stream(item: Item | ItemWithTranscript):
         transcript = "\n" + item.transcript
         # print(f"Prompt: {prompt.format(transcript=transcript)}")
 
-        return chain.stream(input=transcript)
+        return chain.astream(input=transcript)
 
     return "not implemented 2"
 
