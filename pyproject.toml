@@ -1,23 +1,38 @@
-[tool.poetry]
+[project]
 name = "my-app"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = [{name = "Your Name", email = "you@example.com"}]
 readme = "README.md"
-packages = [
-    { include = "app" },
+requires-python = ">=3.11"
+dependencies = [
+    "uvicorn>=0.23.2",
+    "langserve[server]>=0.0.30",
+    "pydantic<2",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-uvicorn = "^0.23.2"
-langserve = {extras = ["server"], version = ">=0.0.30"}
-pydantic = "<2"
-
-
-[tool.poetry.group.dev.dependencies]
-langchain-cli = ">=0.0.15"
+[project.optional-dependencies]
+dev = [
+    "langchain-cli>=0.0.15",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+# ValueError: Unable to determine which files to ship inside the wheel using the following heuristics:
+# https://hatch.pypa.io/latest/plugins/builder/wheel/#default-file-selection
+
+# The most likely cause of this is that there is no directory that matches the name of your project (my_app).
+
+# At least one file selection option must be defined in the `tool.hatch.build.targets.wheel` table, see:
+# https://hatch.pypa.io/latest/config/build/
+
+# As an example, if you intend to ship a directory named `foo` that resides within a `src` directory located at the root of     
+# your project, you can define the following:
+
+# [tool.hatch.build.targets.wheel]
+# packages = ["src/foo"]
+[tool.hatch.build.targets.wheel]
+packages = ["my-app"]  
