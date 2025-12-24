@@ -171,7 +171,9 @@ def parse_youtube_transcript(
         return YouTubeTranscriptResponse.from_dict(json_data)
 
 
-def get_transcript_summary(json_data: str | Dict[str, Any]) -> VideoSummary:
+def get_transcript_summary(
+    json_data: str | Dict[str, Any] | YouTubeTranscriptResponse,
+) -> VideoSummary:
     """
     获取转录数据摘要
 
@@ -181,7 +183,11 @@ def get_transcript_summary(json_data: str | Dict[str, Any]) -> VideoSummary:
     Returns:
         Dict: 摘要信息字典
     """
-    response = parse_youtube_transcript(json_data)
+    if isinstance(json_data, str | dict):
+        response = parse_youtube_transcript(json_data)
+    else:
+        response = json_data
+
     return response.get_summary()
 
 
@@ -234,8 +240,10 @@ if __name__ == "__main__":
     }
     """
 
+    response = parse_youtube_transcript(example_json)
+
     # 使用便利函数
-    summary = get_transcript_summary(example_json)
+    summary = get_transcript_summary(response)
     print("视频摘要:")
     print(f"  视频ID: {summary.video_id}")
     print(f"  标题: {summary.title}")
@@ -250,7 +258,6 @@ if __name__ == "__main__":
     print("\n" + "=" * 50)
 
     # 使用完整对象
-    response = parse_youtube_transcript(example_json)
     print(f"\n完整转录文本: {response.data.transcripts.en_auto.get_full_text()}")
     print(
         f"转录总时长: {response.data.transcripts.en_auto.get_total_duration():.1f} 秒"
