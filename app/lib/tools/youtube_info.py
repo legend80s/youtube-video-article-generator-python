@@ -1,19 +1,30 @@
 import os
-from pydantic import BaseModel, Field
 import re
 
-from youtube_models import YouTubeTranscriptResponse
-
 import httpx
+from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+
+from app.lib.youtube_models import YouTubeTranscriptResponse
+
+load_dotenv()
 
 
-verbose = os.getenv("YAG_VERBOSE") == "True"
+YAG_VERBOSE = os.getenv("YAG_VERBOSE")
+
+verbose = YAG_VERBOSE == "True"
 
 
 class YouTubeId(BaseModel):
     """YouTube视频ID"""
 
     id: str = Field(description="YouTube视频ID")
+
+
+class YouTubeURL(BaseModel):
+    """YouTube视频URL"""
+
+    url: str = Field(description="YouTube视频URL")
 
 
 def extract_video_id(youtube_url: str) -> str:
@@ -57,9 +68,11 @@ def extract_video_id(youtube_url: str) -> str:
 
 
 async def fetch_video_info_using_notegpt_api(
-    video_id: YouTubeId,
+    video_id_instance: YouTubeId,
 ) -> YouTubeTranscriptResponse:
     """Fetch YouTube transcript using NoteGPT API"""
+
+    video_id: str = video_id_instance.id
 
     # Headers from the cURL command
     headers = {
@@ -85,14 +98,17 @@ async def fetch_video_info_using_notegpt_api(
             item.split("=") for item in cookie_str.split("; ") if "=" in item
         )
 
-    if verbose:
-        print(f"cookies: {cookies}")
-
     # Make the API request
     url = f"https://notegpt.io/api/v2/video-transcript?platform=youtube&video_id={video_id}"
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(url, headers=headers, cookies=cookies)
+    if verbose:
+        print(f"\n{url=}")
+        print(f"{cookies=}")
+
+    async with httpx.AsyncClient(
+        timeout=10.0, headers=headers, cookies=cookies
+    ) as client:
+        response = await client.get(url)
         response.raise_for_status()
 
         resp = response.json()
@@ -111,7 +127,7 @@ async def fetch_video_info_using_notegpt_api(
 
 
 async def fetch_transcript_using_notegpt_api(
-    youtube_id_or_youtube_url: str | YouTubeId,
+    youtube_id_or_youtube_url: YouTubeId | YouTubeURL,
 ) -> str:
     """Fetch YouTube transcript using NoteGPT API"""
 
@@ -125,7 +141,7 @@ async def fetch_transcript_using_notegpt_api(
         video_id = youtube_id_or_youtube_url
     else:
         # It's a URL, extract video ID
-        video_id = YouTubeId(id=extract_video_id(youtube_id_or_youtube_url))
+        video_id = YouTubeId(id=extract_video_id(youtube_id_or_youtube_url.url))
 
     return (
         await fetch_video_info_using_notegpt_api(video_id)
@@ -133,10 +149,10 @@ async def fetch_transcript_using_notegpt_api(
 
 
 async def fetch_transcript(
-    youtube_id_or_youtube_url: str | YouTubeId,
+    youtube_id_or_youtube_url: YouTubeURL | YouTubeId,
 ) -> str:
     """Fetch YouTube transcript"""
     return await fetch_transcript_using_notegpt_api(youtube_id_or_youtube_url)
 
 
-__all__ = ["fetch_transcript"]
+__all__ = ["fetch_transcript", "YouTubeId", "YouTubeURL"]
