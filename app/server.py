@@ -1,5 +1,3 @@
-import uuid
-import json
 from typing import Union
 
 from fastapi import FastAPI
@@ -10,7 +8,7 @@ from .api.youtube_articles.generate import (
     Item,
     ItemWithTranscript,
     generate,
-    generate_stream,
+    to_vercel_ai_sdk_generator,
 )
 from .lib.models import chatModel
 
@@ -40,48 +38,11 @@ async def generate_route(item: Union[Item, ItemWithTranscript]) -> dict:
     return {"article": await generate(item)}
 
 
-async def sse_generator(item: Union[Item, ItemWithTranscript]):
-    """生成SSE格式的流式响应"""
-    try:
-        # 获取流式输出
-        stream = generate_stream(item)
-
-        # 如果是字符串类型（错误信息），直接返回
-        if isinstance(stream, str):
-            yield f"data: {stream}\n\n"
-            return
-
-        # 初始化id
-
-        id: str = str(uuid.uuid4())
-        yield f"data: {json.dumps({'id': id, 'type': 'text-start'})}\n\n"
-
-        # 流式输出内容
-        async for chunk in stream:
-            if not id:
-                id = chunk.id
-            # 将每个数据块包装为SSE格式
-            # 转成 vercel ai sdk 格式 id, type: "text-delta", delta: chunk.content
-            chunk = {"id": id, "type": "text-delta", "delta": chunk.content}
-            # yield f"data: {chunk}\n\n"
-            # json dump
-            chunk = json.dumps(chunk)
-            # yield f"data: {chunk}\n\n"
-            yield f"data: {chunk}\n\n"
-
-        # 发送结束信号 id, type: "text-end"
-        yield f"data: {json.dumps({'id': id, 'type': 'text-end'})}\n\n"
-
-    except Exception as e:
-        # 错误处理
-        yield f"data: Error: {str(e)}\n\n"
-
-
 @app.post("/api/youtube-articles/generate_stream")
 async def generate_stream_route(item: Union[Item, ItemWithTranscript]):
     print(f"{item=}")
     return StreamingResponse(
-        sse_generator(item),
+        to_vercel_ai_sdk_generator(item),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

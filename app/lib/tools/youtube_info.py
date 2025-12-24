@@ -2,7 +2,7 @@ import os
 import re
 
 import httpx
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 
 from app.lib.youtube_models import YouTubeTranscriptResponse
@@ -20,51 +20,62 @@ class YouTubeId(BaseModel):
 
     id: str = Field(description="YouTube视频ID")
 
+    @field_validator("id")
+    def validate_id(cls, value: str) -> str:
+        """Validate YouTube video ID"""
+        if not re.match(r"^[a-zA-Z0-9_-]{11}$", value):
+            raise ValueError(f"Invalid YouTube video ID: {value}")
+        return value
+
+    @staticmethod
+    def of(id: str) -> "YouTubeId":
+        return YouTubeId(id=id)
+
 
 class YouTubeURL(BaseModel):
     """YouTube视频URL"""
 
     url: str = Field(description="YouTube视频URL")
 
+    @staticmethod
+    def of(url: str) -> "YouTubeURL":
+        return YouTubeURL(url=url)
 
-def extract_video_id(youtube_url: str) -> str:
-    """
-    # Extract video ID from YouTube URL
+    @property
+    def video_id(self) -> str:
+        """
+        # Extract video ID from YouTube URL
 
-    ## example
-    ### 标准YouTube链接
-    ```py
-    url1 = "https://youtube.com/watch?v=dQw4w9WgXcQ"
-    >>> match1 = re.search(pattern, url1)
-    >>> match1.group(1)
-    'dQw4w9WgXcQ'
-    ```
+        ## example
+        ### 标准YouTube链接
+        ```py
+        >>> url1 = "https://youtube.com/watch?v=dQw4w9WgXcQ"
+        'dQw4w9WgXcQ'
+        ```
 
-    ### 短链接
-    ```py
-    url2 = "https://youtu.be/dQw4w9WgXcQ"
-    >>> match2 = re.search(pattern, url2)
-    >>> match2.group(1)
-    'dQw4w9WgXcQ'
-    ```
+        ### 短链接
+        ```py
+        >>> url2 = "https://youtu.be/dQw4w9WgXcQ"
+        'dQw4w9WgXcQ'
+        ```
 
-    Args:
-        youtube_url (str): _description_
+        Args:
+            youtube_url (str): _description_
 
-    Raises:
-        ValueError: _description_
+        Raises:
+            ValueError: _description_
 
-    Returns:
-        str: _description_
-    """
+        Returns:
+            str: _description_
+        """
 
-    video_id_match = re.search(
-        r"(?:youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]{11})", youtube_url
-    )
-    if not video_id_match:
-        raise ValueError(f"Invalid YouTube URL: {youtube_url}")
+        video_id_match = re.search(
+            r"(?:youtube\.com/watch\?v=|youtu\.be/)([a-zA-Z0-9_-]{11})", self.url
+        )
+        if not video_id_match:
+            raise ValueError(f"Invalid YouTube URL: {self.url}")
 
-    return video_id_match.group(1)
+        return video_id_match.group(1)
 
 
 async def fetch_video_info_using_notegpt_api(
@@ -102,7 +113,7 @@ async def fetch_video_info_using_notegpt_api(
     url = f"https://notegpt.io/api/v2/video-transcript?platform=youtube&video_id={video_id}"
 
     if verbose:
-        print(f"\n{url=}")
+        print(f"\nfetch {url=}")
         print(f"{cookies=}")
 
     async with httpx.AsyncClient(
@@ -141,7 +152,7 @@ async def fetch_transcript_using_notegpt_api(
         video_id = youtube_id_or_youtube_url
     else:
         # It's a URL, extract video ID
-        video_id = YouTubeId(id=extract_video_id(youtube_id_or_youtube_url.url))
+        video_id = YouTubeId.of(youtube_id_or_youtube_url.video_id)
 
     return (
         await fetch_video_info_using_notegpt_api(video_id)

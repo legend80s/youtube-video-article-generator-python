@@ -11,7 +11,7 @@ from app.lib.tools.youtube_info import fetch_transcript, YouTubeId
 
 class TestYouTubeTranscript(unittest.TestCase):
     def test_fetch_transcript(self):
-        transcript = asyncio.run(fetch_transcript(YouTubeId(id="4KdvcQKNfbQ")))
+        transcript = asyncio.run(fetch_transcript(YouTubeId.of("4KdvcQKNfbQ")))
 
         # print(f"{transcript=}")
 

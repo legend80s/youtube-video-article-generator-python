@@ -128,3 +128,57 @@ chain = prompt | model
 
 文章详情页面，默认阅读纯享模式
 文章详情页面，如果数据库有记录，直接展示，如果没有则提示 404 文章暂未生成，请前往首页生成文章。
+
+```
+curl 'https://notegpt.io/api/v2/video-transcript?platform=youtube&video_id=4KdvcQKNfbQ' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' \
+  -b '*******' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://notegpt.io/detail/4KdvcQKNfbQ?type=1&utm_source=youtube-transcript-generator&epl=1' \
+  -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
+```
+
+```
+curl -X 'POST' \
+  'http://127.0.0.1:8000/api/youtube-articles/generate_stream' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "youtube_url": "https://www.youtube.com/watch?v=4KdvcQKNfbQ"
+}'
+```
+
+
+
+解决国内 YouTube 预览图无法访问问题 - 无法解决需要 cookie 且不稳定
+
+试图通过搜索引擎获取但是需要 cookie
+```
+curl 'https://cn.bing.com/search?q=Programming+Party+Tricks+Tsoding&qs=n&FORM=BESBTB&sp=-1&lq=0&pq=programming+party+tricks+tsoding&sc=8-32&sk=&cvid=D5561B38610A4F06A245EC77473C854B&ensearch=1&rdr=1&rdrig=9D0CC49394934B10AAC7FBE7136078E4' \
+  -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
+  -H 'accept-language: zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7' \
+  -H 'ect: 4g' \
+  -H 'priority: u=0, i' \
+  -H 'referer: https://cn.bing.com/search?q=Programming+Party+Tricks+Tsoding&qs=n&FORM=BESBTB&sp=-1&lq=0&pq=programming+party+tricks+tsoding&sc=8-32&sk=&cvid=D5561B38610A4F06A245EC77473C854B&ensearch=1' \
+  -H 'sec-ch-ua: "Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"' \
+  -H 'sec-ch-ua-arch: "x86"' \
+  -H 'sec-ch-ua-bitness: "64"' \
+  -H 'sec-ch-ua-full-version: "143.0.7499.170"' \
+  -H 'sec-ch-ua-full-version-list: "Google Chrome";v="143.0.7499.170", "Chromium";v="143.0.7499.170", "Not A(Brand";v="24.0.0.0"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-model: ""' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-ch-ua-platform-version: "10.0.0"' \
+  -H 'sec-fetch-dest: document' \
+  -H 'sec-fetch-mode: navigate' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'upgrade-insecure-requests: 1' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
+```
