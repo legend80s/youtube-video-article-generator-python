@@ -32,6 +32,22 @@ class LanguageCode(BaseModel):
     name: str = Field(description="语言名称，如 'English (auto-generated)'")
 
 
+class VideoSummary(BaseModel):
+    """视频摘要"""
+
+    video_id: str = Field(description="视频ID")
+    title: str = Field(description="视频标题")
+    author: str = Field(description="视频作者")
+    duration_seconds: float = Field(description="视频时长（秒）")
+    duration_formatted: str = Field(description="视频时长（格式化字符串，如 '1:30'）")
+    thumbnail_url: None | str = Field(description="视频缩略图URL")
+    video_url: str = Field(description="视频播放URL")
+
+    transcript_entries: int = Field(description="transcript 条目数")
+    transcript_duration: float = Field(description="transcript 总时长（秒）")
+    transcript_preview: str = Field(description="transcript 预览文本（前200字符）")
+
+
 class VideoInfo(BaseModel):
     """视频基本信息"""
 
@@ -115,25 +131,25 @@ class YouTubeTranscriptResponse(BaseModel):
         """检查响应是否成功"""
         return self.code == 100000
 
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> VideoSummary:
         """获取视频摘要信息"""
-        if not self.is_success():
-            return {"error": self.message}
+        # if not self.is_success():
+        #     return {"error": self.message}
 
         video_data = self.data
-        return {
-            "video_id": video_data.videoId,
-            "title": video_data.videoInfo.name,
-            "author": video_data.videoInfo.author,
-            "duration_seconds": video_data.get_duration_seconds(),
-            "duration_formatted": f"{video_data.get_duration_seconds() // 60}:{video_data.get_duration_seconds() % 60:02d}",
-            "thumbnail_url": video_data.videoInfo.get_thumbnail_url(),
-            "video_url": video_data.get_video_url(),
-            "transcript_entries": len(video_data.transcripts.en_auto.custom),
-            "transcript_duration": video_data.transcripts.en_auto.get_total_duration(),
-            "transcript_preview": video_data.transcripts.en_auto.get_full_text()[:200]
+        return VideoSummary(
+            video_id=video_data.videoId,
+            title=video_data.videoInfo.name,
+            author=video_data.videoInfo.author,
+            duration_seconds=video_data.get_duration_seconds(),
+            duration_formatted=f"{video_data.get_duration_seconds() // 60}:{video_data.get_duration_seconds() % 60:02d}",
+            thumbnail_url=video_data.videoInfo.get_thumbnail_url(),
+            video_url=video_data.get_video_url(),
+            transcript_entries=len(video_data.transcripts.en_auto.custom),
+            transcript_duration=video_data.transcripts.en_auto.get_total_duration(),
+            transcript_preview=video_data.transcripts.en_auto.get_full_text()[:200]
             + "...",
-        }
+        )
 
 
 # 便利函数
@@ -155,7 +171,7 @@ def parse_youtube_transcript(
         return YouTubeTranscriptResponse.from_dict(json_data)
 
 
-def get_transcript_summary(json_data: str | Dict[str, Any]) -> Dict[str, Any]:
+def get_transcript_summary(json_data: str | Dict[str, Any]) -> VideoSummary:
     """
     获取转录数据摘要
 
@@ -174,7 +190,7 @@ if __name__ == "__main__":
     # 示例JSON数据
     example_json = """
     {
-        "code": 100000,
+        "code": 1000001,
         "message": "success",
         "data": {
             "videoId": "4KdvcQKNfbQ",
@@ -221,8 +237,15 @@ if __name__ == "__main__":
     # 使用便利函数
     summary = get_transcript_summary(example_json)
     print("视频摘要:")
-    for key, value in summary.items():
-        print(f"  {key}: {value}")
+    print(f"  视频ID: {summary.video_id}")
+    print(f"  标题: {summary.title}")
+    print(f"  作者: {summary.author}")
+    print(f"  时长: {summary.duration_formatted}")
+    print(f"  缩略图URL: {summary.thumbnail_url}")
+    print(f"  视频URL: {summary.video_url}")
+    print(f"  Transcript条目数: {summary.transcript_entries}")
+    print(f"  Transcript总时长: {summary.transcript_duration:.1f} 秒")
+    print(f"  Transcript预览: {summary.transcript_preview}")
 
     print("\n" + "=" * 50)
 
