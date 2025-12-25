@@ -61,10 +61,12 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={
+            "success": False,
             "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
             "message": "请求参数验证失败",
-            "errors": error_details,
             "hint": "Check the 'errors' field for specific errors",
+            "request_id": getattr(request.state, "request_id", None),
+            "errors": error_details,
         },
     )
 
