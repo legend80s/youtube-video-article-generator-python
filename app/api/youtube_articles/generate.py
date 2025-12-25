@@ -70,7 +70,8 @@ class ItemWithTranscript(BaseModel):
 
 class Item(BaseModel):
     prompt: str | None = None
-    youtube_url: str = Field(description="YouTube视频URL", alias="youtubeUrl")
+    youtube_url: str = Field(description="YouTube视频URL")
+    # youtube_url: str = Field(description="YouTube视频URL", alias="youtubeUrl")
     mode: str | None = None
 
     model_config = ConfigDict(

@@ -1,8 +1,10 @@
 from typing import Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, exceptions, status
 from fastapi.responses import RedirectResponse, StreamingResponse, JSONResponse
 from langserve import add_routes
+import logging
+
 
 from .api.youtube_articles.generate import (
     Item,
@@ -15,7 +17,10 @@ from .lib.models import chatModel
 # from langchain import promt
 # Create a LANGSMITH_API_KEY in Settings > API Keys
 
-app = FastAPI()
+app = FastAPI(title="YouTube Articles API")
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @app.get("/docs")
@@ -31,6 +36,37 @@ async def echo() -> dict:
 @app.post("/echo")
 async def echo_post() -> dict:
     return {"message": "Hello world!"}
+
+
+# 错误处理中间件
+@app.exception_handler(exceptions.RequestValidationError)
+async def validation_exception_handler(
+    request: Request, exc: exceptions.RequestValidationError
+):
+    """处理 Pydantic 验证错误"""
+
+    logger.error(f"Validation error: {exc.errors()}")
+
+    error_details = [
+        {
+            "location": " -> ".join(str(loc) for loc in error["loc"]),
+            "message": error["msg"],
+            "type": error["type"],
+            "field": error.get("loc", [])[-1] if error.get("loc") else "unknown",
+            "input": error.get("input"),
+        }
+        for error in exc.errors()
+    ]
+
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "message": "请求参数验证失败",
+            "errors": error_details,
+            "hint": "Check the 'errors' field for specific errors",
+        },
+    )
 
 
 @app.post("/api/youtube-articles/generate")
