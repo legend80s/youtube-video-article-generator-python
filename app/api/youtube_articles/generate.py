@@ -67,6 +67,11 @@ class ItemWithTranscript(BaseModel):
     transcript: str
     mode: str | None = None
 
+    @property
+    def id(self) -> str:
+        # 根据 transcript 生成 id
+        return str(uuid.uuid5(uuid.NAMESPACE_DNS, self.transcript))
+
 
 class Item(BaseModel):
     prompt: str | None = None
@@ -85,6 +90,14 @@ class Item(BaseModel):
             }
         },
     )
+
+    @property
+    def id(self) -> str:
+        return self.video_id
+
+    @property
+    def video_id(self) -> str:
+        return YouTubeURL.of(self.youtube_url).video_id
 
 
 async def generate(item: Item | ItemWithTranscript) -> str:

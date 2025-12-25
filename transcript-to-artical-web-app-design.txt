@@ -182,3 +182,465 @@ curl 'https://cn.bing.com/search?q=Programming+Party+Tricks+Tsoding&qs=n&FORM=BE
   -H 'upgrade-insecure-requests: 1' \
   -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
 ```
+
+```txt
+
+
+
+[00:00:02] This is the most important property of
+[00:00:05] exclusive or operation also known as
+[00:00:08] zor. If you apply the same value twice,
+[00:00:12] you get the original value. And to
+[00:00:15] demonstrate that this is actually true,
+[00:00:16] we can bust out Python and take all of
+[00:00:19] the possible combinations of two beats.
+[00:00:21] So let's take a in a range from 0 to 1
+[00:00:24] and b in a range from 0 to 1. And let's
+[00:00:26] take all of the possible combinations of
+[00:00:29] them. Let's literally plug in this
+[00:00:31] formula and confirm that it is true for
+[00:00:34] each individual combination of A and B.
+[00:00:36] And if this formula works for just one
+[00:00:39] bit, that means it works for every
+[00:00:42] single bit of any integer. This has
+[00:00:46] profound implications. For example, this
+[00:00:49] is a simple encryption algorithm
+[00:00:52] actually, believe it or not. So if you
+[00:00:54] have some sort of a message, let's say
+[00:00:55] hello world, you can take each
+[00:00:58] individual character of that message and
+[00:01:01] turn it into an integer of course and
+[00:01:04] let's define some sort of a key and if
+[00:01:06] you zor that with a key you get an
+[00:01:09] encrypted message. Obviously you can
+[00:01:10] turn each individual integer back into a
+[00:01:12] character and then join all of the
+[00:01:14] characters together and you basically
+[00:01:16] get a very simple encryption algorithm.
+[00:01:18] So let's actually wrap that into a
+[00:01:20] function encrypt. It is going to accept
+[00:01:23] message and the key and is going to
+[00:01:25] apply the algorithm and return the
+[00:01:27] result. So if you encrypt the message
+[00:01:30] with the key 69, here's the result.
+[00:01:32] Let's assign it to a variable encrypted
+[00:01:33] message. And to decrypt this message,
+[00:01:36] you use the same algorithm with the same
+[00:01:39] key. If you use a wrong key, excuse me,
+[00:01:42] if you use a wrong key, you're not going
+[00:01:44] to get the same message back. Only if
+[00:01:47] you use the correct key, you'll get this
+[00:01:49] message back. This encryption algorithm
+[00:01:51] is actually still vulnerable to all
+[00:01:53] sorts of attacks including frequency
+[00:01:55] analysis and stuff like that. So I do
+[00:01:57] not recommend using in production. But
+[00:01:58] that's besides the point. It is still a
+[00:02:00] very rudimentary encryption algorithm.
+[00:02:03] Another interesting patchy trick this
+[00:02:06] specific property enables is an ability
+[00:02:08] to swap a value of two variables without
+[00:02:11] using any intermediate variables. Well,
+[00:02:13] in such languages as Python, it is
+[00:02:16] rather easy to swap the value of two
+[00:02:18] variables. Right? So essentially you can
+[00:02:20] just do something like this and there
+[00:02:22] you go you you swapped the value of two
+[00:02:25] variables but in older languages like C
+[00:02:28] it is not that straightforward because
+[00:02:29] it doesn't have multiple assignment
+[00:02:31] doesn't have pupils or anything like
+[00:02:33] that. Let's actually create a C program.
+[00:02:35] Let's include std and let's create an
+[00:02:38] entry point. So let's define two
+[00:02:39] variables A and B. Let's bring them
+[00:02:42] super quick. And usually the first thing
+[00:02:45] people do when they try to swap the
+[00:02:47] value of two variables, they just
+[00:02:48] allocate two variables. So they assign B
+[00:02:51] to X, A to Y, and then assign them back.
+[00:02:55] And there you go. You swapped two
+[00:02:57] variables. Let's compile this entire
+[00:02:58] thing and run it. That's not correct.
+[00:03:02] Ah, I put a line after the print. Excuse
+[00:03:04] me. There we go. So this works
+[00:03:07] obviously, right? But the first sort of
+[00:03:09] algorithmic exercise that gives people
+[00:03:12] who learn programming actual algorithmic
+[00:03:14] experience is to ask them to solve this
+[00:03:17] problem using only one intermediate
+[00:03:19] variable. In real life, it is not
+[00:03:21] important how exactly you achieve that.
+[00:03:23] So it's not like you're wasting too much
+[00:03:24] memory. Memory is cheap. Well, that
+[00:03:27] phrase didn't really age that well, but
+[00:03:28] still additional 32-bit integer is is
+[00:03:31] not going to hurt. It's it's kind of an
+[00:03:32] interesting exercise to try to do that
+[00:03:34] with only one intermediate variable. And
+[00:03:36] the way you do that is you just assign
+[00:03:39] any of the two variables to an
+[00:03:41] intermediate variable and you realize
+[00:03:43] that you just saved the value of that
+[00:03:46] variable. Since you save the value of
+[00:03:48] that variable, you should not be afraid
+[00:03:49] to lose that value. So you can
+[00:03:51] immediately reassign this variable and
+[00:03:53] now you can restore the value of that
+[00:03:56] variable back to the second variable.
+[00:03:57] And there you go. You wrote this
+[00:03:58] algorithm with only one intermediate
+[00:04:01] variable. You can actually start with
+[00:04:02] any variable. You can actually start
+[00:04:04] with B. You can realize that you save
+[00:04:06] the value of B. So you can override it
+[00:04:08] and then you can restore that value back
+[00:04:10] with T. There you go. It still works. It
+[00:04:12] doesn't matter. You can do that in any
+[00:04:13] order. The property of Zor, this
+[00:04:15] specific property of Zor enables you to
+[00:04:17] swap the value of two variables without
+[00:04:19] using any intermediate variables. How
+[00:04:21] does it work? Right? Now a is equal to
+[00:04:24] 69 and B is equal to 420. If you do a
+[00:04:27] zor b, you end up with a equal 69 zor
+[00:04:32] 420 and b equal 420. Okay. Then if you
+[00:04:35] try to do B zor A, you're going to end
+[00:04:37] up with B looking like this. Another
+[00:04:41] interesting property of Zor is that it's
+[00:04:43] commutative. So that means the order of
+[00:04:44] operation doesn't matter. You can swap
+[00:04:46] some of the operants and you end up with
+[00:04:48] a very interesting situation where for
+[00:04:50] 20 actually cancels itself. Okay, that's
+[00:04:52] pretty cool. So the next operation you
+[00:04:54] do a zor b and you end up with a looking
+[00:04:58] like this. Again, commutative order
+[00:05:00] doesn't matter. and we end up with a
+[00:05:01] very interesting situation where 69
+[00:05:03] nuked itself and we just swapped the
+[00:05:05] value of the variables without using any
+[00:05:07] intermediate variables. Still works.
+[00:05:10] It's not like it's useful in real world
+[00:05:12] programming. The compiler will try to do
+[00:05:14] its own thing anyway trying to infer
+[00:05:16] your intent, but it's kind of again nice
+[00:05:19] exercise, nice potty trick. Another
+[00:05:21] party trick that I actually quite often
+[00:05:22] see in coding interview and I don't
+[00:05:25] really understand why interviewers ask
+[00:05:27] this kind of thing is finding a
+[00:05:29] duplicate element. If you ever did a
+[00:05:30] coding interview, you're probably
+[00:05:32] familiar with that sort of exercise. So
+[00:05:34] let's take a look at it. Let's create
+[00:05:36] another C program with an entry point
+[00:05:38] and let's generate numbers from one to
+[00:05:42] 100. Let's literally print them like so.
+[00:05:46] Now let's say that one of the elements
+[00:05:49] is actually duplicated. For example, 69.
+[00:05:52] So if we encounter 69, simply print that
+[00:05:55] 69 twice. All right. You are given an
+[00:05:57] array like that where you have all the
+[00:06:00] numbers from 1 to 100 consequently
+[00:06:02] except one element is duplicated and you
+[00:06:05] have to find what element is duplicated
+[00:06:07] as efficiently as possible preferably in
+[00:06:09] a linear time. Well, given that the
+[00:06:11] array is sorted, it's it's very easy.
+[00:06:13] You just iterate it linearly. But what
+[00:06:16] if it is not sorted?
+[00:06:18] You have to sort it. But sorting is
+[00:06:20] going to be an n login. And in this
+[00:06:22] specific case, we kind of know that it
+[00:06:24] is 69, right? So because we generated
+[00:06:26] this test case but what if we don't know
+[00:06:28] what if we say that this entire thing is
+[00:06:30] literally random a random value from 1
+[00:06:32] to 100 and I'm going to even set the
+[00:06:35] seat to the current time so it is
+[00:06:37] different every time I run this program
+[00:06:39] does actually include lib for the random
+[00:06:41] and time for the time. All right so
+[00:06:44] right now I don't even know which one is
+[00:06:46] duplicated. So let's go ahead and
+[00:06:48] actually join all of the lines with a
+[00:06:51] comma. Let's copy paste this thing and
+[00:06:53] assign it to some sort of an array like
+[00:06:56] this. We have to write an algorithm that
+[00:06:59] finds the duplicate as optimally as
+[00:07:02] possible. And the idea here is to use
+[00:07:05] this property of zor. You see, we can
+[00:07:07] just go ahead and iterate all of the
+[00:07:10] values from 1 to 100, right? Because we
+[00:07:12] know that it contains the numbers for 1
+[00:07:13] to 100. And we can just simply zore all
+[00:07:16] of them together like so. Then if we
+[00:07:19] start iterating through this array of
+[00:07:23] X's, let's actually find its size. So we
+[00:07:25] have to take the size of the entire
+[00:07:27] array, but it's going to give us the
+[00:07:28] size in bytes. So we have to divide it
+[00:07:30] by the size of a single element in
+[00:07:32] bytes. So iterating from 0 to n and then
+[00:07:36] we're zoring that specific x with each
+[00:07:39] individual element from that array. So
+[00:07:41] what is going to happen? X is currently
+[00:07:44] one zor 2 zor 3 zor 4 and so on and so
+[00:07:48] forth. So you are start zoring it with
+[00:07:51] the elements of that array and you start
+[00:07:53] nuking each individual element one by
+[00:07:56] one one by one until you nuke each
+[00:07:59] individual element and then you're going
+[00:08:01] to end up with zero and the last
+[00:08:03] duplicate element let's call it y is
+[00:08:06] going to be zero zor that duplicate y
+[00:08:09] and any value zor zero is that element.
+[00:08:12] So the result is going to be that
+[00:08:14] duplicate element. So let's go ahead and
+[00:08:16] print it. And it's 13 and and it is 13.
+[00:08:21] Look at that. It is duplicated. None of
+[00:08:23] the other elements are duplicated. Only
+[00:08:26] 13.
+[00:08:29] So that's how we do that. I'm giving
+[00:08:30] away how to solve this problem because I
+[00:08:33] absolutely hate it because it tests
+[00:08:35] nothing. It doesn't test your ability to
+[00:08:37] code. It just tests whether you know
+[00:08:39] this gimmick or not. And unfortunately,
+[00:08:42] a lot of coding interviews are like
+[00:08:43] that. They test nothing. But if you put
+[00:08:46] that aside, it is still a kind of cool
+[00:08:48] potty trick. Again, pretty cool patty
+[00:08:50] trick. I like it. Another py trick that
+[00:08:52] is enabled by this specific property of
+[00:08:55] zor is probably something like zor
+[00:08:57] linked list. In a classical doubly
+[00:08:59] linked list, you have a sequence of
+[00:09:01] nodes and each node has a reference to
+[00:09:04] the next node and to the previous node.
+[00:09:07] The nodes at the beginning at the end
+[00:09:09] have a previous node equal to null. So
+[00:09:13] the idea of zor linked list is instead
+[00:09:15] of storing two pointers store only one
+[00:09:19] pointer which is just a zor between the
+[00:09:23] addresses of the previous pointer and
+[00:09:26] the next pointer.
+[00:09:28] None of the nodes have a direct
+[00:09:31] reference to any other nodes, but they
+[00:09:33] have this single number which cuts the
+[00:09:37] memory usage of the entire link list in
+[00:09:39] half excluding the payload, excluding
+[00:09:41] the value stored in the in the node. And
+[00:09:44] the way you iterate this list is by
+[00:09:46] keeping track of the previous value. So
+[00:09:48] let's call this zord value zord. If you
+[00:09:52] know the current node and the previous
+[00:09:55] pointer of that node, you can always
+[00:09:57] take zord and zor of the previous value
+[00:10:01] of this specific previous value and you
+[00:10:04] find the next value. You literally
+[00:10:06] utilizing this property to restore the
+[00:10:10] next value and by keeping track of the
+[00:10:12] previous node, you can iterate this list
+[00:10:14] like that, which is kind of cool. Again,
+[00:10:16] it's not like you're going to be using
+[00:10:18] that in in production or in real world,
+[00:10:20] but again, it's kind of a cool gimmick.
+[00:10:23] Let's implement it. I'm going to include
+[00:10:25] the std anyway.
+[00:10:28] So, let's define a single node. That
+[00:10:31] node is going to store a payload, a
+[00:10:34] value, and a zord value between the
+[00:10:36] previous pointer and the next pointer.
+[00:10:38] We're going to be using a special type
+[00:10:40] which is called u inpointer t called
+[00:10:42] zord. And it's an interesting type. It's
+[00:10:44] a integer specifically an integer but
+[00:10:46] its size is exactly the size of the
+[00:10:48] pointer. So it's specifically designed
+[00:10:50] to store addresses of pointers which is
+[00:10:53] exactly our case. So we're going to be
+[00:10:54] allocating the nodes on the heap. So
+[00:10:56] let's create some sort of helper which
+[00:10:58] basically creates a new node given the
+[00:11:01] value and it returns you pointer to the
+[00:11:03] node allocated on the heap. So we're
+[00:11:04] going to do malo and let's take size of
+[00:11:07] the node and let's assign it to the node
+[00:11:09] that we allocated. In fact, I would like
+[00:11:11] to maybe take a size of of the
+[00:11:13] dreference node. So if I change ever
+[00:11:15] change the type of this thing I didn't
+[00:11:17] have to change it in here. Not like I'm
+[00:11:18] going to be maintaining this code, but
+[00:11:20] still. Uh so after that, let's actually
+[00:11:22] set the whole thing to zero. So let's
+[00:11:24] zero initialize this entire stuff and
+[00:11:26] let's set the value to value. An
+[00:11:28] interesting thing is that the value of
+[00:11:30] zord equal to zero means that the
+[00:11:33] previous and the next is zero because
+[00:11:36] zord zero is zero. So just zord being
+[00:11:40] zero indicates that you don't have
+[00:11:42] neither next nor previous. It's a
+[00:11:44] standalone node. And let's just return
+[00:11:46] this node. Let's define the linked list
+[00:11:48] itself. Linked. So the link list itself
+[00:11:50] is going to keep track of the begin node
+[00:11:53] and the end node. So you you know at
+[00:11:55] least from where to iterate. And let's
+[00:11:58] implement only one single operation for
+[00:12:00] link list to keep the scope of this
+[00:12:02] entire video a little bit smaller. And
+[00:12:03] I'll append. Let's only implement
+[00:12:05] append. So we're going to take a pointer
+[00:12:07] to the linked list and the value that
+[00:12:09] you want to append in here. There's two
+[00:12:11] situations that can happen in a doubly
+[00:12:13] linked list is that when the list is
+[00:12:15] empty, meaning that something like end
+[00:12:17] or begin is equal to null. In fact, if
+[00:12:20] one of them is equal to null, that means
+[00:12:22] the other one also has to be equal to
+[00:12:24] null. We might want to assert this
+[00:12:26] specific case. If one of them is equal
+[00:12:28] to no, another one is not equal to null.
+[00:12:30] The list is just in a weird state. We
+[00:12:31] don't want to deal with that. And I
+[00:12:33] don't want to focus on implementing this
+[00:12:34] thing yet. So let's actually say that
+[00:12:36] it's not implemented. I want to work on
+[00:12:38] the case when you have at least one
+[00:12:41] element in the list because in that case
+[00:12:43] you have something in the end. The zord
+[00:12:46] value of the end is probably going to be
+[00:12:49] equal to something like previous zord
+[00:12:52] zero or null because the end doesn't
+[00:12:55] have the next. So it's previous zor
+[00:12:58] zero. But what's interesting is that any
+[00:13:00] value zor zero is that value. So that
+[00:13:03] means zord is equal exactly to previous.
+[00:13:07] There's nothing we can do with that
+[00:13:08] right now, but it's just like nice to
+[00:13:09] know. Let's allocate a node on a heap.
+[00:13:12] Let's allocate the node. This is the
+[00:13:14] node and node create. And I'm just like
+[00:13:16] pushing a value in here. So I allocated
+[00:13:19] a new node. Let's maybe pick a different
+[00:13:23] color. This is the new node. So what I
+[00:13:25] have to do I have to point its previous
+[00:13:27] value to the end. It doesn't have a next
+[00:13:30] value. So that means it's going to be
+[00:13:32] something like end zor zero which means
+[00:13:36] we have to take the value of the end and
+[00:13:38] simply assign it to zord of the node
+[00:13:41] obviously casting it to your int
+[00:13:43] pointer. Okay. So that should be
+[00:13:45] sufficient. Now we have to redirect the
+[00:13:48] next value of the end to this node. But
+[00:13:51] as of right now that next value is equal
+[00:13:54] to zero. So and as we already said that
+[00:13:56] zord is literally equal to previous. So
+[00:13:59] to actually set the previous value to
+[00:14:02] the node we have to do zor the pointer
+[00:14:05] to that new node. Obviously casting it
+[00:14:07] to the int pointer t. All right the last
+[00:14:10] thing we have to point the end to the
+[00:14:12] new node. We can also align it like
+[00:14:14] that. That should be it. In case of the
+[00:14:16] list being empty, what we want to do, we
+[00:14:18] want to probably also allocate a new
+[00:14:21] node and instantly set it to the end and
+[00:14:24] maybe set begin to the end as well. So
+[00:14:27] this one is actually rather simple,
+[00:14:28] right? We don't even have to set zor to
+[00:14:30] anything, right? So this is the first
+[00:14:31] element. As soon as you allocate a first
+[00:14:33] element, both begin and end are going to
+[00:14:35] be pointing at the same that element.
+[00:14:37] And then if you push more, you're going
+[00:14:38] to be going into that branch. So that
+[00:14:40] should be it actually. So let's allocate
+[00:14:42] the linked list on the stack in here.
+[00:14:44] zero initialize it of course let's
+[00:14:45] iterate from five to let's say 10 and
+[00:14:50] let's keep pushing the elements into
+[00:14:52] here let's try to run the whole thing
+[00:14:56] okay let's go through the compilation
+[00:14:58] errors so for that thing it needs to
+[00:15:00] have std int also for the maloc it needs
+[00:15:03] to have standard library that's
+[00:15:05] understandable for the mems set it needs
+[00:15:07] to have string and I think for the
+[00:15:09] assert it also needs assert so that's
+[00:15:11] all of the things there we go so and it
+[00:15:13] didn't crash at least right so there's
+[00:15:15] no segmentation fault now we need to
+[00:15:17] iterate this entire thing when we're
+[00:15:18] only starting to iterate the previous
+[00:15:20] value is obviously equal to zero let's
+[00:15:24] assign an iterator let's take the begin
+[00:15:27] how can we get the next note what we
+[00:15:29] have to do we have to take zord then
+[00:15:32] zord it with the previous and that will
+[00:15:35] give us the pointer to the next so we
+[00:15:37] have to reassign it like that and that's
+[00:15:39] the next and we have to keep doing that
+[00:15:41] until we encounter zero It would be kind
+[00:15:44] of nice to organize some sort of a for
+[00:15:46] loop. What I'm thinking is that we could
+[00:15:48] have do something like this. So this is
+[00:15:50] initialization. We keep doing that while
+[00:15:53] eater is not new and then on each
+[00:15:56] iteration we do something like that.
+[00:15:59] Problem here is that we also need to
+[00:16:01] update the previous accordingly. So
+[00:16:04] let's create a helper function something
+[00:16:05] like node next. It is going to accept
+[00:16:09] the current node and it's going to
+[00:16:10] return you the next node. But to compute
+[00:16:12] the next node, it needs the address of
+[00:16:15] the previous one. And as it computes the
+[00:16:17] next one, it also should update the
+[00:16:19] value of the previous one. It is going
+[00:16:20] to do this computation to compute the
+[00:16:22] next one. And it's going to return you
+[00:16:24] the next one. But on top of that, it is
+[00:16:26] going to update the previous value with
+[00:16:28] the value of the current node. And that
+[00:16:30] way it computes the next one and keeps
+[00:16:32] track of the previous. So in here, we
+[00:16:34] can now go ahead and print the value of
+[00:16:37] each individual node. It's not eater.
+[00:16:40] It's actually node. All right. Yeah,
+[00:16:42] this is a pointer. I forgot to reference
+[00:16:44] this entire thing. There we go. And it's
+[00:16:46] seculted. Perfect. Ah, of course I
+[00:16:49] forgot to call this function. And now it
+[00:16:51] works. It iterates the elements from
+[00:16:54] five to 10. What's interesting is that
+[00:16:57] if you set the initial value to end, it
+[00:17:01] will iterate the list in a reverse
+[00:17:03] order. The reason being is that the
+[00:17:05] previous value of the begin is null and
+[00:17:08] the previous the value of the end is
+[00:17:10] null as well. So somehow picking the
+[00:17:13] initial node also defines a direction of
+[00:17:17] iteration even though you explicitly
+[00:17:19] never really defined it. It is kind of
+[00:17:22] cool actually. And all of that was made
+[00:17:25] possible by this small property which
+[00:17:28] sometimes is actually written like this.
+[00:17:31] But but I don't like this way of writing
+[00:17:33] this property because it kind of hides
+[00:17:35] the intent. It kind of hides the
+[00:17:37] implications. If you write it like this,
+[00:17:40] it tells you the implications very
+[00:17:42] explicitly and I kind of like that. So
+[00:17:45] do you know any other applications of
+[00:17:47] this specific property of Zor? I'm
+[00:17:48] pretty sure there's like an infinite of
+[00:17:50] them. I only wish they start asking this
+[00:17:52] in according interviews.
+```
