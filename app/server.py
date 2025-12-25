@@ -19,7 +19,9 @@ from .lib.models import chatModel
 
 app = FastAPI(title="YouTube Articles API")
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO, format="%(levelname)s - %(asctime)s - %(name)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -118,4 +120,10 @@ add_routes(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        # log_level="debug",  # 或 "debug" 查看更详细信息
+        # access_log=True,
+    )
