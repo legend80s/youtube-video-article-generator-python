@@ -1,23 +1,19 @@
-from typing import Union
+# from typing import Union
 
-from fastapi import FastAPI, Request, exceptions, status
-from fastapi.responses import RedirectResponse, StreamingResponse, JSONResponse
-from langserve import add_routes
+# AsyncGenerator
+
+
 import logging
 
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 
-from .api.youtube_articles.generate import (
-    Item,
-    ItemWithTranscript,
-    generate,
-    to_vercel_ai_sdk_generator,
-)
-from .lib.models import chatModel
+from langserve import add_routes
 
-# from langchain import promt
-# Create a LANGSMITH_API_KEY in Settings > API Keys
-
-app = FastAPI(title="YouTube Articles API")
+from app.core.database import create_db_and_tables
+from app.api.v1 import api_v1_router
+from app.core.exceptions import validation_exception_handler
+from .lib.llms import chatModel
 
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(asctime)s - %(name)s - %(message)s"
@@ -25,97 +21,47 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@app.get("/docs")
-async def redirect_root_to_docs() -> RedirectResponse:
-    return RedirectResponse("/docs")
+# # from langchain import promt
+# # Create a LANGSMITH_API_KEY in Settings > API Keys
 
 
-@app.get("/echo")
-async def echo() -> dict:
-    return {"message": "Hello world!"}
+async def lifespan(app: FastAPI):
+    logger.info("[lifespan] Starting up...")
+    await create_db_and_tables()
+    yield
+    logger.info("[lifespan] Shutting down...")
 
 
-@app.post("/echo")
-async def echo_post() -> dict:
-    return {"message": "Hello world!"}
+def create_application() -> FastAPI:
+    """创建 FastAPI 应用"""
 
+    # app = FastAPI(title="YouTube Articles API")
+    app = FastAPI(title="YouTube Articles API", lifespan=lifespan)
 
-# 错误处理中间件
-@app.exception_handler(exceptions.RequestValidationError)
-async def validation_exception_handler(
-    request: Request, exc: exceptions.RequestValidationError
-):
-    """处理 Pydantic 验证错误"""
+    # 注册异常处理器
+    @app.exception_handler(RequestValidationError)
+    def _(request: Request, exc: RequestValidationError):
+        return validation_exception_handler(request, exc)
 
-    logger.error(f"Validation error: {exc.errors()}")
+    # app.exception_handler(RequestValidationError)(
+    #     lambda request, exc: validation_exception_handler(request, exc)
+    # )
 
-    error_details = [
-        {
-            "location": " -> ".join(str(loc) for loc in error["loc"]),
-            "message": error["msg"],
-            "type": error["type"],
-            "field": error.get("loc", [])[-1] if error.get("loc") else "unknown",
-            "input": error.get("input"),
-        }
-        for error in exc.errors()
-    ]
+    # 注册路由
+    app.include_router(api_v1_router)
 
-    return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={
-            "success": False,
-            "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
-            "message": "请求参数验证失败",
-            "hint": "Check the `detail` field for specific errors",
-            "request_id": getattr(request.state, "request_id", None),
-            "detail": error_details,
-        },
+    # Edit this to add the chain you want to add
+    add_routes(
+        app,
+        chatModel,
+        path="/openai",
     )
 
-
-@app.post("/api/youtube-articles/generate")
-async def generate_route(item: Union[Item, ItemWithTranscript]) -> dict:
-    return {"article": await generate(item)}
+    return app
 
 
-@app.post("/api/youtube-articles/generate_stream")
-async def generate_stream_route(item: Union[Item, ItemWithTranscript]):
-    print(f"{item=}")
-    return StreamingResponse(
-        to_vercel_ai_sdk_generator(item),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Cache-Control",
-        },
-    )
-
-
-# INFO:     127.0.0.1:53070 - "OPTIONS /api/youtube-articles/generate_stream HTTP/1.1" 405 Method Not Allowed
-# 为现有路由添加OPTIONS处理器
-@app.options("/api/youtube-articles/generate_stream")
-async def handle_options():
-    """处理OPTIONS预检请求"""
-    return JSONResponse(
-        content={"message": "OK"},
-        headers={
-            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type, Authorization",
-            "Access-Control-Allow-Origin": "*",  # 生产环境请指定具体域名
-            "Access-Control-Max-Age": "86400",  # 24小时缓存
-        },
-    )
-
-
-# Edit this to add the chain you want to add
-add_routes(
-    app,
-    chatModel,
-    path="/openai",
-)
-
+# 创建应用实例 -Error loading ASGI app. Attribute "app" not found in module "app.server".
+app = create_application()
 
 if __name__ == "__main__":
     import uvicorn

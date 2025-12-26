@@ -1,6 +1,7 @@
 import uuid
 import hashlib
 
+__all__ = ["QuickFragmentCheck"]
 
 url = "http://www.youtube.com/watch?v=4KdvcQKNfbQ 水电费水电费"
 hashed = hashlib.sha256(url.encode()).hexdigest()

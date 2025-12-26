@@ -1,0 +1,5 @@
+# [tool.ruff]
+# target-version = "py313"  # 关键配置！告诉 Ruff 你用的 Python 版本
+
+# [tool.ruff.lint]
+# target-version = "py313"

@@ -16,7 +16,7 @@ from langchain_core.runnables import Runnable
 from langsmith import Client
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.lib.models import chatModel
+from app.lib.llms import chatModel
 from app.lib.tools.youtube_info import fetch_transcript, YouTubeURL
 
 client = Client()
