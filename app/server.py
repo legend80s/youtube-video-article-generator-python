@@ -1,10 +1,3 @@
-# from typing import Union
-
-# AsyncGenerator
-
-
-import logging
-
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 
@@ -14,11 +7,9 @@ from app.core.database import create_db_and_tables
 from app.api.v1 import api_v1_router
 from app.core.exceptions import validation_exception_handler
 from .utils.llms import chatModel
+from .utils.log import get_logger
 
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname)s - %(asctime)s - %(name)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 # # from langchain import promt

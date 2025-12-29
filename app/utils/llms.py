@@ -1,9 +1,10 @@
 import os
-import logging
 
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 from dotenv import load_dotenv
+
+from app.utils.log import get_logger
 
 # 加载 .env 文件中的所有变量
 load_dotenv()
@@ -11,11 +12,13 @@ load_dotenv()
 api_key = os.getenv("ARK_API_KEY")
 base_url = os.getenv("ARK_BASE_URL")
 
+logger = get_logger(__name__)
+
 if api_key and base_url:
-    logging.info(f"{SecretStr(api_key)=}")
-    logging.info(f"{base_url=}")
+    logger.info(f"{SecretStr(api_key)=}")
+    logger.info(f"{base_url=}")
 else:
-    logging.error("API Key 未找到，请检查设置")
+    logger.error("API Key 未找到，请检查设置")
     # throw error
     raise ValueError("API Key or base_url 未找到，请检查设置")
 
