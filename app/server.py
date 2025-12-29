@@ -13,7 +13,7 @@ from langserve import add_routes
 from app.core.database import create_db_and_tables
 from app.api.v1 import api_v1_router
 from app.core.exceptions import validation_exception_handler
-from .lib.llms import chatModel
+from .utils.llms import chatModel
 
 logging.basicConfig(
     level=logging.INFO, format="%(levelname)s - %(asctime)s - %(name)s - %(message)s"

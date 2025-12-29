@@ -1,4 +1,5 @@
 import os
+import logging
 
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
@@ -11,12 +12,10 @@ api_key = os.getenv("ARK_API_KEY")
 base_url = os.getenv("ARK_BASE_URL")
 
 if api_key and base_url:
-    print(f"{SecretStr(api_key)=}")
-    print(f"{base_url=}")
-
-    print("API Key 已成功加载")
+    logging.info(f"{SecretStr(api_key)=}")
+    logging.info(f"{base_url=}")
 else:
-    print("API Key 未找到，请检查设置")
+    logging.error("API Key 未找到，请检查设置")
     # throw error
     raise ValueError("API Key or base_url 未找到，请检查设置")
 

@@ -1,7 +1,7 @@
 import time
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-from app.lib.youtube_models import VideoSummary
+from app.utils.youtube_models import VideoSummary
 
 from sqlmodel import Field as SQLField, Session, SQLModel, create_engine, select
 
@@ -66,7 +66,7 @@ class ArticleFromTranscript(ArticleBaseFields):
         return v
 
 
-class ArticleFromYoutubeUrl(BaseModel):
+class ArticleFromYoutubeUrl(ArticleBaseFields):
     """文章模型 - 从 YouTube 视频 URL 生成"""
 
     source: Literal["from_youtube_url"] = "from_youtube_url"

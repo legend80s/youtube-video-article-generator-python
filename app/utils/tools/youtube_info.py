@@ -5,7 +5,7 @@ import httpx
 from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
 
-from app.lib.youtube_models import YouTubeTranscriptResponse
+from app.utils.youtube_models import YouTubeTranscriptResponse
 
 load_dotenv()
 

@@ -8,7 +8,7 @@ from app.api.youtube_articles.generate import (
     generate,
     to_vercel_ai_sdk_generator,
 )
-from app.lib.models.articles import ArticleFromTranscript, ArticleFromYoutubeUrl
+from app.models.articles import ArticleFromTranscript, ArticleFromYoutubeUrl
 
 router = APIRouter(prefix="/youtube-articles", tags=["youtube-articles"])
 
