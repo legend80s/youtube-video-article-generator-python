@@ -1,9 +1,11 @@
 import time
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-from app.utils.youtube_models import VideoSummary
+from typing import Any, Literal
 
-from sqlmodel import Field as SQLField, Session, SQLModel, create_engine, select
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from sqlmodel import JSON, SQLModel
+from sqlmodel import Field as SQLField
+
+from app.utils.youtube_models import VideoSummary
 
 
 class ArticleBaseFields(BaseModel):
@@ -32,17 +34,46 @@ class ArticleBaseFields(BaseModel):
     )
 
 
-class Article(ArticleBaseFields, SQLModel, table=True):
+class ArticleDB(SQLModel, table=True):
     """SQLModel 文章模型"""
 
-    # 覆盖 id 类型
-    id: int | None = SQLField(description="文章ID", default=None, primary_key=True)
+    # 主键ID
+    id: int = SQLField(description="文章ID", primary_key=True)
 
-    # 添加数据库特有字段
+    # 文章生成来源
+    source: str = SQLField(description="文章生成来源", index=True)
+
+    # 文章风格
+    style: str = SQLField(default="professional", description="文章风格")
+
+    # 文章标题
+    title: str = SQLField(description="文章标题")
+
+    # 文章内容
+    content: str = SQLField(description="文章内容 - AI 生成")
+
+    # 视频转录文本
+    transcript: str = SQLField(description="视频转录文本")
+
+    # YouTube视频ID
     youtube_video_id: str | None = SQLField(
         default=None, description="YouTube视频ID", index=True
     )
-    video_info: VideoSummary | None = SQLField(default=None, description="视频摘要信息")
+
+    # 视频摘要信息 - 使用 JSON 类型存储
+    video_info: dict[str, Any] | None = SQLField(
+        default=None, sa_type=JSON, description="视频摘要信息"
+    )
+
+    # 时间戳字段
+    gmt_created: int = SQLField(
+        default_factory=lambda: int(time.time()),
+        description="文章创建时间（GMT 时间戳）",
+    )
+    gmt_modified: int = SQLField(
+        default_factory=lambda: int(time.time()),
+        description="文章最后修改时间（GMT 时间戳）",
+    )
 
     # 配置
     model_config = ConfigDict(from_attributes=True)
