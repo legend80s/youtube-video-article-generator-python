@@ -17,6 +17,7 @@ dependencies = [
     "ddgs>=9.10.0",
     "sqlmodel>=0.0.29",
     "aiosqlite>=0.22.1",
+    "watchfiles>=1.1.1",
 ]
 
 [project.optional-dependencies]

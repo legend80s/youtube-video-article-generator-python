@@ -13,49 +13,38 @@ class ArticleBaseFields(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    # 共享字段定义
+    # 共享字段定义 - 使用 Pydantic Field
     id: str = Field(description="文章ID")
     source: Literal["from_transcript", "from_youtube_url"] = Field(
         description="文章生成来源"
     )
     style: Literal["professional", "casual", "academic"] = Field(
-        default="professional", description="文章风格"
+        description="文章风格", default="professional"
     )
     title: str = Field(description="文章标题")
     content: str = Field(description="文章内容 - AI 生成")
     transcript: str = Field(description="视频转录文本")
     gmt_created: int = Field(
-        default_factory=lambda: int(time.time()),
         description="文章创建时间（GMT 时间戳）",
+        default_factory=lambda: int(time.time()),
     )
     gmt_modified: int = Field(
-        default_factory=lambda: int(time.time()),
         description="文章最后修改时间（GMT 时间戳）",
+        default_factory=lambda: int(time.time()),
     )
 
 
-class ArticleDB(SQLModel, table=True):
-    """SQLModel 文章模型"""
+class ArticleDB(ArticleBaseFields, SQLModel, table=True):
+    """SQLModel 文章模型 - 继承基础字段并重写数据库特定字段"""
 
-    # 主键ID
+    # 重写主键ID - 使用 int 类型作为数据库主键
     id: int = SQLField(description="文章ID", primary_key=True)
 
-    # 文章生成来源
+    # 重写 source 和 style - 使用 str 类型而非 Literal
     source: str = SQLField(description="文章生成来源", index=True)
+    style: str = SQLField(description="文章风格", default="professional")
 
-    # 文章风格
-    style: str = SQLField(default="professional", description="文章风格")
-
-    # 文章标题
-    title: str = SQLField(description="文章标题")
-
-    # 文章内容
-    content: str = SQLField(description="文章内容 - AI 生成")
-
-    # 视频转录文本
-    transcript: str = SQLField(description="视频转录文本")
-
-    # YouTube视频ID
+    # YouTube视频ID - 数据库特有字段
     youtube_video_id: str | None = SQLField(
         default=None, description="YouTube视频ID", index=True
     )
@@ -64,19 +53,6 @@ class ArticleDB(SQLModel, table=True):
     video_info: dict[str, Any] | None = SQLField(
         default=None, sa_type=JSON, description="视频摘要信息"
     )
-
-    # 时间戳字段
-    gmt_created: int = SQLField(
-        default_factory=lambda: int(time.time()),
-        description="文章创建时间（GMT 时间戳）",
-    )
-    gmt_modified: int = SQLField(
-        default_factory=lambda: int(time.time()),
-        description="文章最后修改时间（GMT 时间戳）",
-    )
-
-    # 配置
-    model_config = ConfigDict(from_attributes=True)
 
 
 class ArticleFromTranscript(ArticleBaseFields):

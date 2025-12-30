@@ -1,3 +1,4 @@
+from app.utils.log import get_logger
 from sqlalchemy import alias
 import os
 import json
@@ -59,7 +60,9 @@ chat_prompt = enhance_prompt(original_prompt, custom_system_prompt)
 
 prompt = chat_prompt
 
-chain: Runnable = prompt | chatModel
+articleGenerateLLM: Runnable = prompt | chatModel
+
+logger = get_logger(__name__)
 
 
 class ItemWithTranscript(BaseModel):
@@ -100,10 +103,16 @@ class Item(BaseModel):
         return YouTubeURL.of(self.youtube_url).video_id
 
 
+def chat(input: str) -> AsyncIterator[str]:
+    logger.info(f"Received input: {input}")
+
+    return (chatModel | StrOutputParser()).astream(input)
+
+
 async def generate(item: Item | ItemWithTranscript) -> str:
-    print(f"Received 1 item: {item}")
+    logger.info(f"Received 1 item: {item}")
     if isinstance(item, ItemWithTranscript):
-        str_chain: Runnable = chain | StrOutputParser()
+        str_chain: Runnable = articleGenerateLLM | StrOutputParser()
         transcript = "\n" + item.transcript
 
         return await str_chain.ainvoke(input=transcript)
@@ -111,7 +120,7 @@ async def generate(item: Item | ItemWithTranscript) -> str:
     return "not implemented 1"
 
 
-async def generate_stream(
+async def generate_article_stream(
     item: Item | ItemWithTranscript,
 ) -> AsyncIterator[AIMessageChunk]:
     verbose and print(f"[generate_stream] item: {item}")
@@ -123,7 +132,7 @@ async def generate_stream(
 
         transcript = "\n" + item.transcript
         # print(f"Prompt: {prompt.format(transcript=transcript)}")
-        return chain.astream(input=transcript)
+        return articleGenerateLLM.astream(input=transcript)
     else:
         url: str = item.youtube_url
         verbose and print(f"[generate_stream] only url: {url}")
@@ -131,7 +140,7 @@ async def generate_stream(
         # fetch transcript by url
         try:
             transcript = await fetch_transcript(YouTubeURL.of(url))
-            return chain.astream(input="\n" + transcript)
+            return articleGenerateLLM.astream(input="\n" + transcript)
         except Exception as exception:
             verbose and print(f"💥 [generate_stream] Exception: {exception}")
 
@@ -148,12 +157,13 @@ async def generate_stream(
     return not_implemented_generator()
 
 
-async def to_vercel_ai_sdk_generator(item: Union[Item, ItemWithTranscript]):
-    """生成SSE格式的流式响应"""
-    try:
-        # 获取流式输出
-        stream = await generate_stream(item)
+async def to_vercel_ai_sdk_format(stream: AsyncIterator[AIMessageChunk]):
+    """
+    将 python langchain 返回的 stream 格式输出转成 vercel AI UI sdk useCompletion 期望的格式
+    生成SSE格式的流式响应
+    """
 
+    try:
         # 如果是字符串类型（错误信息），直接返回
         if isinstance(stream, str):
             yield f"data: {stream}\n\n"
@@ -187,4 +197,8 @@ async def to_vercel_ai_sdk_generator(item: Union[Item, ItemWithTranscript]):
         yield f"data: Error: {str(e)}\n\n"
 
 
-__all__ = ["generate", "to_vercel_ai_sdk_generator"]
+__all__ = [
+    "generate",
+    "generate_article_stream",
+    "to_vercel_ai_sdk_format",
+]

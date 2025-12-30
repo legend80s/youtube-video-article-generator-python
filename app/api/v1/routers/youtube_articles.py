@@ -2,11 +2,13 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi import HTTPException, APIRouter
 
 from app.core.database import SessionDep
-from app.api.youtube_articles.generate import (
+from app.services.ai_generator import (
     Item,
     ItemWithTranscript,
     generate,
-    to_vercel_ai_sdk_generator,
+    generate_article_stream,
+    to_vercel_ai_sdk_format,
+    chat,
 )
 from app.models.articles import ArticleFromTranscript, ArticleFromYoutubeUrl
 
@@ -25,11 +27,30 @@ async def generate_route(item: Item | ItemWithTranscript) -> dict:
     return {"article": await generate(item)}
 
 
+@router.get("/chat")
+async def chat_route(input: str):
+    print(f"{input=}")
+    stream = chat(input)
+
+    return StreamingResponse(
+        stream,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Cache-Control",
+        },
+    )
+
+
 @router.post("/generate_stream")
 async def generate_stream_route(item: Item | ItemWithTranscript):
     print(f"{item=}")
+    stream = await generate_article_stream(item)
+
     return StreamingResponse(
-        to_vercel_ai_sdk_generator(item),
+        to_vercel_ai_sdk_format(stream),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

@@ -25,7 +25,7 @@ def validation_exception_handler(
 
         return {
             "location": " -> ".join(str(loc) for loc in error["loc"]),
-            "message": error["msg"] + f" ({type(input)=})",
+            "message": error["msg"] + f" [{type(input)=}]",
             "type": error["type"],
             "field": loc[-1] if loc else "unknown",
             # "input": input_val.decode()

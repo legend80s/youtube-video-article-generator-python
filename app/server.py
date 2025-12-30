@@ -20,7 +20,6 @@ async def lifespan(app: FastAPI):
     logger.info("[lifespan] Starting up...")
     await create_db_and_tables()
     yield
-    logger.info("[lifespan] Shutting down...")
 
 
 def create_application() -> FastAPI:
